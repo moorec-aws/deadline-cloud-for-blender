@@ -31,7 +31,7 @@ class BlenderNotRunningError(Exception):
 
 
 # Actions which must be queued before any others.
-_FIRST_BLENDER_ACTIONS = ["scene_file"]
+_FIRST_BLENDER_ACTIONS = ["scene_file", "gpu_device"]
 
 # Order of execution is important.
 _BLENDER_INIT_KEYS = [
@@ -271,7 +271,7 @@ class BlenderAdaptor(Adaptor[AdaptorConfiguration]):
         Raises:
             FileNotFoundError: If the blender_client.py file could not be found.
         """
-        blender_exe = "blender"
+        blender_exe = os.environ.get("BLENDER_EXECUTABLE", "blender")
         regexhandler = RegexHandler(self._get_regex_callbacks())
 
         # Add the openjd namespace directory to PYTHONPATH, so that adaptor_runtime_client

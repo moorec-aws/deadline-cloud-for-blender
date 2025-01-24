@@ -33,7 +33,7 @@ classifiers = [
 
 dependencies = [
     "deadline == 0.49.*", 
-    "openjd-adaptor-runtime >= 0.7,< 0.9",
+    "openjd-adaptor-runtime >= 0.7,< 0.10",
 ]
 
 [project.urls]
@@ -91,7 +91,7 @@ explicit_package_bases = true
 mypy_path = "src"
 
 [[tool.mypy.overrides]]
-module = ["bpy.*", "qtpy.*"]
+module = ["bpy.*", "qtpy.*", "PyOpenColorIO.*"]
 
 # --- RUFF / BLACK ---
 
@@ -125,6 +125,10 @@ testpaths = ["test"]
 looponfailroots = ["src", "test"]
 # looponfailroots is deprecated, this removes the deprecation from the test output
 filterwarnings = ["ignore::DeprecationWarning"]
+markers = [
+    "submitter: mark a test as using the submitter.",
+    "adaptor: mark test as using the adaptor.",
+]
 
 # --- COVERAGE ---
 

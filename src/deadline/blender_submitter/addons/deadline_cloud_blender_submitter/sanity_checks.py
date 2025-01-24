@@ -13,9 +13,10 @@ from . import blender_utils
 from . import scene_settings_widget as ssw
 
 
-def run_sanity_checks(settings):
+def run_sanity_checks(settings, prompt_for_saving=True):
     # Prompt user for decision if there are unsaved changes
-    _prompt_unsaved_changes()
+    if prompt_for_saving:
+        _prompt_unsaved_changes()
 
     # Ensure there is a job name.
     if not settings.name:
@@ -73,6 +74,10 @@ def run_sanity_checks(settings):
             output_dir_as_path.mkdir(parents=True)
         except Exception as e:
             raise RuntimeError(f"Could not create {output_dir_as_path}.\n\nError message:\n{e}")
+
+    # Ensure the output file prefix was specified
+    if not settings.output_file_prefix:
+        raise RuntimeError("Please enter a prefix for the output files.")
 
 
 def _prompt_unsaved_changes():

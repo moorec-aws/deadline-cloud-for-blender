@@ -10,6 +10,7 @@ import os
 from deadline.client.ui import block_signals
 from . import blender_utils
 from .template_filling import BlenderSubmitterUISettings
+from . import ocio_utils as ocio
 from qtpy.QtCore import QRegularExpression, QSize, Qt  # type: ignore
 from qtpy.QtGui import QRegularExpressionValidator  # type: ignore
 from qtpy.QtWidgets import (  # type: ignore
@@ -59,9 +60,14 @@ class SceneSettingsWidget(QWidget):
         self.proj_path_txt.setReadOnly(True)
 
         qt_pos_index += 1
-        self.op_path_txt = FileSearchLineEdit(directory_only=True)
-        layout.addWidget(QLabel("Output Path"), qt_pos_index, 0)
-        layout.addWidget(self.op_path_txt, qt_pos_index, 1)
+        self.op_dir_txt = FileSearchLineEdit(directory_only=True)
+        layout.addWidget(QLabel("Output Directory"), qt_pos_index, 0)
+        layout.addWidget(self.op_dir_txt, qt_pos_index, 1)
+
+        qt_pos_index += 1
+        self.op_file_txt = QLineEdit(self)
+        layout.addWidget(QLabel("Output File Prefix"), qt_pos_index, 0)
+        layout.addWidget(self.op_file_txt, qt_pos_index, 1)
 
         qt_pos_index += 1
         self.scenes_box = QComboBox(self)
@@ -91,6 +97,23 @@ class SceneSettingsWidget(QWidget):
         self.cameras_box = QComboBox(self)
         layout.addWidget(QLabel("Cameras"), qt_pos_index, 0)
         layout.addWidget(self.cameras_box, qt_pos_index, 1)
+
+        qt_pos_index += 1
+        self.enable_gpu_check = QCheckBox("Cycles GPU Rendering", self)
+        self.gpu_device_box = QComboBox(self)
+        # Natively supported GPU devices for Blender 3.6 and 4.2:
+        # https://docs.blender.org/manual/en/3.6/render/cycles/gpu_rendering.html
+        # https://docs.blender.org/manual/en/4.2/render/cycles/gpu_rendering.html
+        gpu_device_options = ["CUDA", "OptiX", "HIP", "oneAPI", "Metal"]
+        for device in gpu_device_options:
+            self.gpu_device_box.addItem(device, device.upper())
+
+        # If the user wants to use another device type, let them edit the value manually
+        self.gpu_device_box.setEditable(True)
+
+        layout.addWidget(self.enable_gpu_check, qt_pos_index, 0)
+        layout.addWidget(self.gpu_device_box, qt_pos_index, 1)
+        self.enable_gpu_check.stateChanged.connect(self.activate_enable_gpu_changed)
 
         qt_pos_index += 1
         self.frame_override_check = QCheckBox("Override Frame Range", self)
@@ -186,7 +209,8 @@ class SceneSettingsWidget(QWidget):
     def _load(self, settings: BlenderSubmitterUISettings):
         """Set the UI to load sticky settings values."""
         self.proj_path_txt.setText(settings.project_path)
-        self.op_path_txt.set_text(settings.output_path)
+        self.op_dir_txt.set_text(settings.output_path)
+        self.op_file_txt.setText(settings.output_file_prefix)
 
         i = self.scenes_box.findData(settings.scene_name)
         if i >= 0:
@@ -204,6 +228,12 @@ class SceneSettingsWidget(QWidget):
         if i >= 0:
             self.cameras_box.setCurrentIndex(i)
 
+        self.enable_gpu_check.setChecked(settings.enable_gpu)
+        i = self.gpu_device_box.findData(settings.gpu_device)
+        if i >= 0:
+            self.gpu_device_box.setCurrentIndex(i)
+        self.gpu_device_box.setEnabled(settings.enable_gpu)
+
         self.frame_override_check.setChecked(settings.override_frame_range)
         self.frame_override_txt.setEnabled(settings.override_frame_range)
         self.frame_override_txt.setText(settings.frame_list)
@@ -214,16 +244,35 @@ class SceneSettingsWidget(QWidget):
     def update_settings(self, settings: BlenderSubmitterUISettings):
         """Update a scene settings object with the latest values."""
         settings.project_path = self.proj_path_txt.text()
-        settings.output_path = self.op_path_txt.get_text()
+        settings.output_path = self.op_dir_txt.get_text()
+        settings.output_file_prefix = self.op_file_txt.text()
         settings.scene_name = self.scenes_box.currentData()
         settings.renderer_name = self.render_engine_box.currentData()
+        settings.ocio_config_path = ocio.get_ocio_path()
         settings.view_layer_selection = self.layers_box.currentData()
         settings.camera_selection = self.cameras_box.currentData()
+        settings.enable_gpu = self.enable_gpu_check.isChecked()
+
+        if settings.enable_gpu:
+            # Blender's natively-supported options should be converted to uppercase from the menu options.
+            # Custom options won't have associated data, so we use `currentText` to set the GPU device setting.
+            settings.gpu_device = (
+                self.gpu_device_box.currentData()
+                if self.gpu_device_box.currentData()
+                else self.gpu_device_box.currentText()
+            )
+        else:
+            settings.gpu_device = "NONE"
+
         settings.override_frame_range = self.frame_override_check.isChecked()
         settings.frame_list = self.frame_override_txt.text()
         settings.include_adaptor_wheels = (
             self.include_adaptor_wheels.isChecked() if self.dev_options else False
         )
+
+    def activate_enable_gpu_changed(self, state):
+        """Set the activated/deactivated status of the GPU Device text box."""
+        self.gpu_device_box.setEnabled(Qt.CheckState(state) == Qt.Checked)
 
     def activate_frame_override_changed(self, state):
         """Set the activated/deactivated status of the Frame override text box."""
