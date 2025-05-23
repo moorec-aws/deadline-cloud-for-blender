@@ -1,44 +1,49 @@
 name: "Release: Publish"
-run-name: "Release: ${{ inputs.tag }}"
+run-name: "Release: ${{ github.event.head_commit.message || inputs.tag }}"
 
 on:
+  push:
+    branches:
+      - mainline
+    paths:
+      - CHANGELOG.md
   workflow_dispatch:
-      inputs:
-          tag:
-              required: true
-              type: string
+    inputs:
+      tag:
+        required: true
+        type: string
+        description: Specify a tag to re-run a release.
 
 jobs:
-  ReleaseCheck:
-    uses: aws-deadline/.github/.github/workflows/reusable_release_check.yml@mainline
-    secrets:
-      EMAIL: ${{ secrets.EMAIL }}
+  TagRelease:
+    uses: moorec-aws/.github/.github/workflows/reusable_tag_release.yml@mainline
+    secrets: inherit
     with:
-      tag: ${{ inputs.tag }}
+      tag: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || '' }}
 
   UnitTests:
-    needs: ReleaseCheck
+    needs: [TagRelease]
     name: Unit and Integration Tests
     uses: ./.github/workflows/code_quality.yml
     with:
-      tag: ${{inputs.tag}}
+      tag: ${{ needs.TagRelease.outputs.tag }}
 
   PreRelease:
-      needs: [ReleaseCheck, UnitTests]
-      uses: aws-deadline/.github/.github/workflows/reusable_prerelease.yml@mainline
+      needs: UnitTests
+      uses: moorec-aws/.github/.github/workflows/reusable_prerelease.yml@mainline
       secrets: inherit
       with:
-          tag: ${{inputs.tag}}
+          tag: ${{ needs.TagRelease.outputs.tag }}
 
   BuildAndStageInstallers:
     needs: PreRelease
-    uses: aws-deadline/.github/.github/workflows/reusable_stage_installers.yml@mainline
+    uses: moorec-aws/.github/.github/workflows/reusable_stage_installers.yml@mainline
     secrets: inherit
     permissions:
       id-token: write
     with:
       project_name: ${{ github.event.repository.name }}
-      tag: ${{ inputs.tag }}
+      tag: ${{ needs.TagRelease.outputs.tag }}
       oses: "['Linux', 'Windows', 'MacOS']"
 
   IsCondaReady:
@@ -52,17 +57,18 @@ jobs:
 
   Release:
       needs: IsCondaReady
-      uses: aws-deadline/.github/.github/workflows/reusable_release.yml@mainline
+      uses: moorec-aws/.github/.github/workflows/reusable_release.yml@mainline
       secrets: inherit
       with:
-          tag: ${{inputs.tag}}
+          tag: ${{ needs.TagRelease.outputs.tag }}
   
   Publish:
       needs: Release
-      uses: aws-deadline/.github/.github/workflows/reusable_publish_python.yml@mainline
+      uses: moorec-aws/.github/.github/workflows/reusable_publish_python.yml@mainline
       secrets: inherit
       with:
-          tag: ${{inputs.tag}}
+          tag: ${{ needs.TagRelease.outputs.tag }}
+
   # PyPI does not support reusable workflows yet
   # # See https://github.com/pypi/warehouse/issues/11096
   PublishToPyPI:
@@ -75,7 +81,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.tag }}
+          ref: ${{ needs.TagRelease.outputs.tag }}
           fetch-depth: 0
       - name: Set up Python
         uses: actions/setup-python@v5
