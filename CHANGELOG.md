@@ -1,3 +1,10 @@
+## 0.6.0 (2025-05-23)
+
+
+
+### Bug Fixes
+* update workflows ([`b701ba5`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/b701ba5d42708a893fe568aaadde2dc249d7e417))
+
 ## 0.5.3 (2025-04-09)
 
 
