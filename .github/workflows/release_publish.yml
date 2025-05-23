@@ -14,6 +14,12 @@ on:
         type: string
         description: Specify a tag to re-run a release.
 
+concurrency:
+  group: release
+
+permissions:
+  contents: read
+
 jobs:
   TagRelease:
     uses: moorec-aws/.github/.github/workflows/reusable_tag_release.yml@mainline
