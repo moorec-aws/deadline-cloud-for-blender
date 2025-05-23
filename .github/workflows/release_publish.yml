@@ -50,6 +50,7 @@ jobs:
     secrets: inherit
     permissions:
       id-token: write
+      contents: read
     with:
       project_name: ${{ github.event.repository.name }}
       tag: ${{ needs.TagRelease.outputs.tag }}
