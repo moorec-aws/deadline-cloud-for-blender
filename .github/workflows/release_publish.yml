@@ -37,7 +37,7 @@ jobs:
 
   BuildAndStageInstallers:
     needs: PreRelease
-    uses: moorec-aws/.github/.github/workflows/reusable_stage_installers.yml@mainline
+    uses: moorec-aws/.github/.github/workflows/reusable_build_and_stage_installers.yml@mainline
     secrets: inherit
     permissions:
       id-token: write
