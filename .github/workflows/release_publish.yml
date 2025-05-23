@@ -35,14 +35,14 @@ jobs:
       tag: ${{ needs.TagRelease.outputs.tag }}
 
   PreRelease:
-      needs: UnitTests
+      needs: [TagRelease, UnitTests]
       uses: moorec-aws/.github/.github/workflows/reusable_prerelease.yml@mainline
       secrets: inherit
       with:
           tag: ${{ needs.TagRelease.outputs.tag }}
 
   BuildAndStageInstallers:
-    needs: PreRelease
+    needs: [TagRelease, PreRelease]
     uses: moorec-aws/.github/.github/workflows/reusable_build_and_stage_installers.yml@mainline
     secrets: inherit
     permissions:
@@ -62,14 +62,14 @@ jobs:
          :
 
   Release:
-      needs: IsCondaReady
+      needs: [TagRelease, IsCondaReady]
       uses: moorec-aws/.github/.github/workflows/reusable_release.yml@mainline
       secrets: inherit
       with:
           tag: ${{ needs.TagRelease.outputs.tag }}
   
   Publish:
-      needs: Release
+      needs: [TagRelease, Release]
       uses: moorec-aws/.github/.github/workflows/reusable_publish_python.yml@mainline
       secrets: inherit
       with:
@@ -78,7 +78,7 @@ jobs:
   # PyPI does not support reusable workflows yet
   # # See https://github.com/pypi/warehouse/issues/11096
   PublishToPyPI:
-      needs: Publish
+      needs: [TagRelease, Publish]
       runs-on: ubuntu-latest
       environment: release
       permissions:
