@@ -37,6 +37,9 @@ jobs:
   PreRelease:
       needs: [TagRelease, UnitTests]
       uses: moorec-aws/.github/.github/workflows/reusable_prerelease.yml@mainline
+      permissions:
+        id-token: write
+        contents: write
       secrets: inherit
       with:
           tag: ${{ needs.TagRelease.outputs.tag }}
@@ -65,12 +68,17 @@ jobs:
       needs: [TagRelease, IsCondaReady]
       uses: moorec-aws/.github/.github/workflows/reusable_release.yml@mainline
       secrets: inherit
+      permissions:
+        id-token: write
+        contents: write
       with:
           tag: ${{ needs.TagRelease.outputs.tag }}
   
   Publish:
       needs: [TagRelease, Release]
       uses: moorec-aws/.github/.github/workflows/reusable_publish_python.yml@mainline
+      permissions:
+        id-token: write
       secrets: inherit
       with:
           tag: ${{ needs.TagRelease.outputs.tag }}
