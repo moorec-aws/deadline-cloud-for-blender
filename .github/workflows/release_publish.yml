@@ -59,6 +59,7 @@ jobs:
       project_name: ${{ github.event.repository.name }}
 
   Publish:
+      if: false
       needs: [TagRelease, BuildInstaller]
       uses: moorec-aws/.github/.github/workflows/reusable_publish_python.yml@mainline
       permissions:
@@ -101,7 +102,7 @@ jobs:
   # PyPI does not support reusable workflows yet
   # # See https://github.com/pypi/warehouse/issues/11096
   PublishToPyPI:
-      needs: [TagRelease, Publish]
+      needs: [TagRelease, Release]
       runs-on: ubuntu-latest
       environment: release
       permissions:
