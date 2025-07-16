@@ -1,3 +1,13 @@
+## 0.6.2 (2025-07-16)
+
+
+
+### Bug Fixes
+* Installer now enables the Deadline addon in Blender. (#240) ([`4422a7a`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/4422a7a17952164d5ab98ead5ddcbbbe6e508f38))
+* Installer now enables the Deadline addon in Blender. ([`4422a7a`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/4422a7a17952164d5ab98ead5ddcbbbe6e508f38))
+* remove tmp installer directory after install (#235) ([`63a13d7`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/63a13d79281b658d691ca9a29eabbad2de3774f3))
+* Asset References on Network Drives are UNC Paths (#231) ([`8162022`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/81620228b00c949f0b29e348423d59e381059553))
+
 ## 0.5.4 (2025-07-02)
 
 
