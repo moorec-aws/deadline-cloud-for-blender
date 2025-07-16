@@ -1,3 +1,12 @@
+## 0.6.1 (2025-07-16)
+
+
+
+### Bug Fixes
+* thing ([`4bfa910`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/4bfa910c15e323eba31e136e4bc397ccb193a790))
+* remove tmp installer directory after install (#235) ([`63a13d7`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/63a13d79281b658d691ca9a29eabbad2de3774f3))
+* Asset References on Network Drives are UNC Paths (#231) ([`8162022`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/81620228b00c949f0b29e348423d59e381059553))
+
 ## 0.5.4 (2025-07-02)
 
 
