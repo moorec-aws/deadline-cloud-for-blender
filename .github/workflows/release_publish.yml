@@ -91,7 +91,7 @@ jobs:
 
   Release:
       needs: [TagRelease, ReleaseInstaller]
-      uses: aws-deadline/.github/.github/workflows/reusable_release.yml@mainline
+      uses: moorec-aws/.github/.github/workflows/reusable_release.yml@mainline
       secrets: inherit
       permissions:
         id-token: write
@@ -102,6 +102,7 @@ jobs:
   # PyPI does not support reusable workflows yet
   # # See https://github.com/pypi/warehouse/issues/11096
   PublishToPyPI:
+      if: false
       needs: [TagRelease, Release]
       runs-on: ubuntu-latest
       environment: release
