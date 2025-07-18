@@ -1,0 +1,32 @@
+name: Label PR
+
+on:
+  workflow_run:
+    workflows: ["Record PR"]
+    types:
+      - completed
+
+permissions:
+  actions: read
+  pull-requests: write
+
+jobs:
+  get-pr-details:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    uses: ./.github/workflows/reusable_extract_pr_details.yml
+    with:
+      record_pr_workflow_id: ${{ github.event.workflow_run.id }}
+      artifact_name: "pr-info"
+      workflow_origin: ${{ github.repository }}
+
+  add-label:
+    needs: get-pr-details
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add label to PR
+        run: |
+          PR_NUMBER=${{ needs.get-pr-details.outputs.pr_number }}
+          echo "Adding label to PR #$PR_NUMBER"
+          gh pr edit $PR_NUMBER --add-label "waiting-on-maintainers"
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
