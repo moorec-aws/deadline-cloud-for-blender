@@ -11,6 +11,24 @@ from typing import Any
 def run_command(args: list[str]) -> subprocess.CompletedProcess[bytes]:
     # Inherit environment to ensure DISPLAY and other variables are passed
     env = os.environ.copy()
+    
+    # Explicitly set DISPLAY for Qt applications
+    env['DISPLAY'] = ':99'
+    
+    # Debug: print environment and test display connection
+    print(f"Environment DISPLAY: {env.get('DISPLAY', 'NOT SET')}")
+    
+    # Test if display is accessible
+    test_display = subprocess.run(['xdpyinfo', '-display', ':99'], capture_output=True)
+    print(f"Display :99 accessible: {test_display.returncode == 0}")
+    if test_display.returncode != 0:
+        print(f"xdpyinfo error: {test_display.stderr.decode()}")
+    
+    # Check if xcb-util-cursor library is actually available
+    cursor_check = subprocess.run(['ldconfig', '-p'], capture_output=True)
+    cursor_libs = [line for line in cursor_check.stdout.decode().split('\n') if 'xcb-cursor' in line]
+    print(f"Available xcb-cursor libraries: {cursor_libs}")
+    
     output = subprocess.run(args, capture_output=True, env=env)
 
     print(f"Ran the following: {' '.join(output.args)}")
