@@ -74,9 +74,15 @@ def find_files(project_path, skip_temp=True, skip_nonexistent=True) -> list[Path
         skip_temp: if True, skip all files from any of Blender's potential temp directories.
         skip_nonexistent: if True, skip all files that do not exist. When files are shared across machines, Blender may retain memory of original paths; this ensures that all retrieved paths exist on the local filesystem.
     """
+    print(f"DEBUG find_files: project_path={project_path}")
+    print(f"DEBUG find_files: project_path exists={os.path.exists(project_path)}")
+    
     files = bpy.utils.blend_paths(absolute=True)
+    print(f"DEBUG find_files: bpy.utils.blend_paths returned: {files}")
+    
     files.append(project_path)
     files = set(Path(f) for f in files)
+    print(f"DEBUG find_files: files after adding project_path: {files}")
 
     temp_dirs = []
     if skip_temp:
@@ -105,14 +111,27 @@ def find_files(project_path, skip_temp=True, skip_nonexistent=True) -> list[Path
 
     filtered_files = []
     for file in files:
+        file_exists = file.exists()
+        file_readable = file.is_file() and os.access(file, os.R_OK) if file_exists else False
+        print(f"DEBUG find_files: checking file {file}")
+        print(f"DEBUG find_files:   exists={file_exists}, readable={file_readable}")
+        if file_exists:
+            try:
+                stat_info = file.stat()
+                print(f"DEBUG find_files:   permissions={oct(stat_info.st_mode)}, owner={stat_info.st_uid}")
+            except Exception as e:
+                print(f"DEBUG find_files:   stat error: {e}")
+        
         if (
             (skip_temp and _is_in_temp(file))
             or (skip_nonexistent and not file.exists())
             or _is_essential_brush(file)
         ):
+            print(f"DEBUG find_files: skipping file {file}")
             continue
         filtered_files.append(Path(os.path.abspath(file)))
 
+    print(f"DEBUG find_files: final filtered_files: {filtered_files}")
     return filtered_files
 
 
