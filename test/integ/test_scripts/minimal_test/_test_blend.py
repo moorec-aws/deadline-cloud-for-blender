@@ -20,6 +20,8 @@ from deadline_cloud_blender_submitter.scene_settings_widget import (
     COMBO_DEFAULT_ALL_RENDERABLE_LAYERS,
 )
 
+# Import blender_utils to test find_files directly
+from deadline_cloud_blender_submitter import blender_utils as bu
 
 def main(job_history_dir: str, output_dir: str):
     """
@@ -36,6 +38,14 @@ def main(job_history_dir: str, output_dir: str):
 
     QtWidgets.QApplication(sys.argv)
     widget = create_deadline_dialog()
+
+    # DEBUG: Test bu.find_files directly
+    project_path = bpy.context.blend_data.filepath
+    print(f"DEBUG: Testing bu.find_files with project_path: {project_path}")
+    files = bu.find_files(project_path)
+    print(f"DEBUG: bu.find_files returned: {files}")
+    print(f"DEBUG: Number of files found: {len(files)}")
+    print(f"DEBUG: Project file exists: {os.path.exists(project_path)}")
 
     settings = widget.job_settings_type()
     widget.shared_job_settings.update_settings(settings)
