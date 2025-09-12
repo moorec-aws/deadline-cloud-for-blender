@@ -37,10 +37,14 @@ build-installer = "python {root}/scripts/build_installer_cli.py --installer-sour
 build = "hatch build"
 
 [envs.integ]
+environment = {}
 pre-install-commands = [
   "pip install -r requirements-integ-testing.txt",
   "pip install -r requirements-testing.txt"
 ]
+
+[envs.integ.env-vars]
+DISPLAY=:99
 
 [envs.integ.scripts]
 test = "pytest --no-cov {args:test/integ} -vvv --numprocesses=1"
