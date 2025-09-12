@@ -11,24 +11,8 @@ from typing import Any
 def run_command(args: list[str]) -> subprocess.CompletedProcess[bytes]:
     # Inherit environment to ensure DISPLAY and other variables are passed
     env = os.environ.copy()
-    
-    # Explicitly set DISPLAY for Qt applications
-    env['DISPLAY'] = ':99'
-    
-    # Debug: print environment and check library
-    print(f"Environment DISPLAY: {env.get('DISPLAY', 'NOT SET')}")
-    
-    # Check if xcb-cursor library is actually available
-    try:
-        cursor_check = subprocess.run(['ldconfig', '-p'], capture_output=True)
-        cursor_libs = [line for line in cursor_check.stdout.decode().split('\n') if 'xcb-cursor' in line]
-        print(f"Available xcb-cursor libraries: {cursor_libs}")
-    except Exception as e:
-        print(f"Could not check libraries: {e}")
-    
-    # Add strace to see what Qt is trying to open
-    strace_args = ['strace', '-e', 'openat', '-f'] + args
-    output = subprocess.run(strace_args, capture_output=True, env=env)
+
+    output = subprocess.run(args, capture_output=True, env=env)
 
     print(f"Ran the following: {' '.join(output.args)}")
     print(f"\nstdout:\n\n{output.stdout.decode('utf-8', errors='replace')}")
