@@ -27,10 +27,34 @@ def main():
     )
     args = parser.parse_args()
 
+    print(f"DEBUG: Install path: {args.deadline_cloud_install_path}")
+    
+    # Check if path exists
+    import os
+    if os.path.exists(args.deadline_cloud_install_path):
+        print(f"DEBUG: Path exists, contents: {os.listdir(args.deadline_cloud_install_path)}")
+    else:
+        print(f"DEBUG: Path does not exist!")
+        return
+
+    # Check current script directories
+    print(f"DEBUG: Current script directories: {bpy.context.preferences.filepaths.script_directories}")
+
     bpy.ops.preferences.script_directory_add(directory=args.deadline_cloud_install_path)
+    
+    print(f"DEBUG: Script directories after add: {bpy.context.preferences.filepaths.script_directories}")
+    
     bpy.utils.load_scripts(refresh_scripts=True)
 
-    addon_utils.enable("deadline_cloud_blender_submitter", default_set=True)
+    # Check available addons
+    available_addons = [addon.module for addon in addon_utils.modules()]
+    print(f"DEBUG: Available addons: {[a for a in available_addons if 'deadline' in a.lower()]}")
+
+    try:
+        result = addon_utils.enable("deadline_cloud_blender_submitter", default_set=True)
+        print(f"DEBUG: Enable result: {result}")
+    except Exception as e:
+        print(f"DEBUG: Enable failed: {e}")
 
     bpy.ops.wm.save_userpref()
 
