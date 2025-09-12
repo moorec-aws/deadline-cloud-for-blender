@@ -26,7 +26,9 @@ def run_command(args: list[str]) -> subprocess.CompletedProcess[bytes]:
     except Exception as e:
         print(f"Could not check libraries: {e}")
     
-    output = subprocess.run(args, capture_output=True, env=env)
+    # Add strace to see what Qt is trying to open
+    strace_args = ['strace', '-e', 'openat', '-f'] + args
+    output = subprocess.run(strace_args, capture_output=True, env=env)
 
     print(f"Ran the following: {' '.join(output.args)}")
     print(f"\nstdout:\n\n{output.stdout.decode('utf-8', errors='replace')}")
