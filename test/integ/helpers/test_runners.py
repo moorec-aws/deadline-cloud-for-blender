@@ -9,7 +9,9 @@ from typing import Any
 
 
 def run_command(args: list[str]) -> subprocess.CompletedProcess[bytes]:
-    output = subprocess.run(args, capture_output=True)
+    # Inherit environment to ensure DISPLAY and other variables are passed
+    env = os.environ.copy()
+    output = subprocess.run(args, capture_output=True, env=env)
 
     print(f"Ran the following: {' '.join(output.args)}")
     print(f"\nstdout:\n\n{output.stdout.decode('utf-8', errors='replace')}")
