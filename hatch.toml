@@ -44,7 +44,7 @@ pre-install-commands = [
 ]
 
 [envs.integ.env-vars]
-DISPLAY=:99
+DISPLAY=":99"
 
 [envs.integ.scripts]
 test = "pytest --no-cov {args:test/integ} -vvv --numprocesses=1"
