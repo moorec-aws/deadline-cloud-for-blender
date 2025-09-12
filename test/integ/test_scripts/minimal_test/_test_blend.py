@@ -1,5 +1,9 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 
+import os
+# Set DISPLAY before any Qt imports
+os.environ['DISPLAY'] = ':99'
+
 import bpy
 from pathlib import Path
 import sys
