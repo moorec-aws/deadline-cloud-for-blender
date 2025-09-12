@@ -47,7 +47,7 @@ def main():
     bpy.utils.load_scripts(refresh_scripts=True)
 
     # Check available addons
-    available_addons = [addon.module for addon in addon_utils.modules()]
+    available_addons = [addon.__name__ for addon in addon_utils.modules()]
     print(f"DEBUG: Available addons: {[a for a in available_addons if 'deadline' in a.lower()]}")
 
     try:
