@@ -67,6 +67,7 @@ def get_frames() -> str:
 
 
 def find_files(project_path, skip_temp=True, skip_nonexistent=True) -> list[Path]:
+    print("DEBUG: find_files function called!")  # This should always print
     """Returns a normalized list of paths to external files referenced by the loaded `.blend` file, augmented with `project_path`.
 
     Args:
@@ -76,6 +77,9 @@ def find_files(project_path, skip_temp=True, skip_nonexistent=True) -> list[Path
     """
     print(f"DEBUG find_files: project_path={project_path}")
     print(f"DEBUG find_files: project_path exists={os.path.exists(project_path)}")
+    # Add these lines at the start
+    print(f"DEBUG find_files: bpy.data.filepath = '{bpy.data.filepath}'")
+    print(f"DEBUG find_files: File loaded = {bool(bpy.data.filepath)}")
     
     files = bpy.utils.blend_paths(absolute=True)
     print(f"DEBUG find_files: bpy.utils.blend_paths returned: {files}")

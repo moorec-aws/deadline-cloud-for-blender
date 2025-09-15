@@ -29,6 +29,11 @@ def main(job_history_dir: str, output_dir: str):
     """
     bpy.ops.wm.open_mainfile(filepath=str(Path(__file__).parent / "scene" / "test.blend"))
 
+    # Add these debug lines here
+    print(f"DEBUG: Loaded file path: {bpy.data.filepath}")
+    print(f"DEBUG: File exists: {os.path.exists(bpy.data.filepath)}")
+    print(f"DEBUG: bpy.utils.blend_paths(): {bpy.utils.blend_paths(absolute=True)}")
+
     bpy.context.scene.frame_start = 1
     bpy.context.scene.frame_end = 2
     bpy.context.scene.render.filepath = str(Path(output_dir) / "image_####")
