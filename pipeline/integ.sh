@@ -5,4 +5,4 @@ set -e
 
 pip install --upgrade pip
 pip install --upgrade hatch
-hatch run integ:test --basetemp=/tmp/pytest_debug
+hatch run integ:test

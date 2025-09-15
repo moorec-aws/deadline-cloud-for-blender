@@ -14,6 +14,9 @@ from deadline_cloud_blender_submitter.open_deadline_cloud_dialog import (
 )
 from qtpy import QtWidgets
 
+# Import blender_utils to test find_files directly
+from deadline_cloud_blender_submitter import blender_utils as bu
+
 
 def main(job_history_dir: str, output_dir_in_scene: str, output_dir_in_submitter: str):
     """
@@ -29,6 +32,11 @@ def main(job_history_dir: str, output_dir_in_scene: str, output_dir_in_submitter
     bpy.context.scene.render.resolution_y = 480
 
     QtWidgets.QApplication(sys.argv)
+    
+    # CodeBuild Runners user /tmp, we need to override the tmp filter
+    original_find_files = bu.find_files
+    bu.find_files = lambda project_path, skip_temp=True, skip_nonexistent=True: original_find_files(project_path, skip_temp=False, skip_nonexistent=skip_nonexistent)
+
     widget = create_deadline_dialog()
 
     settings = widget.job_settings_type()

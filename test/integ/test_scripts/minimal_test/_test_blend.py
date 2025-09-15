@@ -42,7 +42,8 @@ def main(job_history_dir: str, output_dir: str):
     bpy.context.scene.render.resolution_y = 480
 
     QtWidgets.QApplication(sys.argv)
-
+    
+    # CodeBuild Runners user /tmp, we need to override the tmp filter
     original_find_files = bu.find_files
     bu.find_files = lambda project_path, skip_temp=True, skip_nonexistent=True: original_find_files(project_path, skip_temp=False, skip_nonexistent=skip_nonexistent)
 
