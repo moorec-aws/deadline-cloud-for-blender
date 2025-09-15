@@ -42,11 +42,16 @@ def main(job_history_dir: str, output_dir: str):
     bpy.context.scene.render.resolution_y = 480
 
     QtWidgets.QApplication(sys.argv)
+
+    original_find_files = bu.find_files
+    bu.find_files = lambda project_path, skip_temp=True, skip_nonexistent=True: original_find_files(project_path, skip_temp=False, skip_nonexistent=skip_nonexistent)
+
     widget = create_deadline_dialog()
 
     # DEBUG: Test bu.find_files directly
     project_path = bpy.context.blend_data.filepath
     print(f"DEBUG: Testing bu.find_files with project_path: {project_path}")
+    print(f"DEBUG: bpy.data.filepath before find_files = '{bpy.data.filepath}'")
     files = bu.find_files(project_path)
     print(f"DEBUG: bu.find_files returned: {files}")
     print(f"DEBUG: Number of files found: {len(files)}")
