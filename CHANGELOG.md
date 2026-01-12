@@ -1,3 +1,19 @@
+## 0.6.3 (2026-01-12)
+
+
+### Features
+* add Blender 4.5 support to installer and repository (#255) ([`c62a4e3`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/c62a4e34316cb0c44d1048fd79a0871306f2deeb))
+
+### Bug Fixes
+* gpu_device isn't marked as required in init-data (#274) ([`778cc11`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/778cc11d8a75409e2c31b7efbe21ff9a2388b54b))
+* unnecessary brush assets included as job attachments (#257) ([`a99c925`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/a99c925191b8fcb077625dca4f2ea4dbbcbce1b3))
+* installing with --enabled-components flag would always install all blender versions. (#250) ([`e3f0305`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/e3f0305647fc96816e7817aa886570ab61019a7c))
+* Installer now enables the Deadline addon in Blender. (#240) ([`4422a7a`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/4422a7a17952164d5ab98ead5ddcbbbe6e508f38))
+* Installer now enables the Deadline addon in Blender. ([`4422a7a`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/4422a7a17952164d5ab98ead5ddcbbbe6e508f38))
+* remove tmp installer directory after install (#235) ([`63a13d7`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/63a13d79281b658d691ca9a29eabbad2de3774f3))
+* Asset References on Network Drives are UNC Paths (#231) ([`8162022`](https://github.com/moorec-aws/deadline-cloud-for-blender/commit/81620228b00c949f0b29e348423d59e381059553))
+
+
 ## 0.5.5 (2025-08-06)
 
 
